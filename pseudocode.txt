@@ -1,0 +1,92 @@
+// --- 1. IMPORTATION DES MODULES ---
+IMPORTER module pour envoyer des mails (smtplib)
+IMPORTER module pour gérer le CSV (csv)
+IMPORTER module pour gérer le temps/pauses (time)
+IMPORTER modules pour construire le mail (MIMEMultipart, MIMEText, MIMEBase)
+
+// --- 2. CONFIGURATION (CONSTANTES) ---
+DEFINIR mon_email = "ton_email@gmail.com"
+DEFINIR mon_mot_de_passe = "ton_mot_de_passe_application"
+DEFINIR fichier_cv = "Mon_CV.pdf"
+DEFINIR fichier_csv = "Liste entreprise stage.xlsx - Feuille 1.csv"
+DEFINIR referentiel_BTS = "referentiel_bts.pdf"
+
+// --- 3. FONCTION PRINCIPALE ---
+FONCTION main():
+
+    // A. CONNEXION AU SERVEUR (On ouvre la ligne sécurisée)
+    ESSAYER de se connecter au serveur SMTP (ex: gmail port 587)
+    ACTIVER la sécurité (starttls)
+    SE CONNECTER avec mon_email et mon_mot_de_passe
+    
+    SI échec : ARRÊTER le programme et afficher l'erreur.
+
+    // B. LECTURE DU FICHIER DONNÉES
+    OUVRIR fichier_csv en mode lecture :
+        CRÉER un lecteur de CSV (DictReader) qui reconnait les colonnes
+
+        // C. BOUCLE : ON TRAITE CHAQUE LIGNE (CHAQUE ENTREPRISE)
+        POUR CHAQUE ligne DANS le fichier :
+
+            // --- ETAPE 1 : RECUPERATION INTELLIGENTE DES DONNEES ---
+            
+            // On cherche l'email du responsable en priorité
+            SI ligne['MAIL_RESPONSABLE'] n'est pas vide :
+                email_destinataire = ligne['MAIL_RESPONSABLE']
+            SINON SI ligne['EMAIL_ENTREPRISE'] n'est pas vide :
+                email_destinataire = ligne['EMAIL_ENTREPRISE']
+            SINON :
+                AFFICHER "Pas d'email pour cette ligne, on passe."
+                CONTINUER vers la prochaine ligne (skip)
+
+            // On prépare la politesse personnalisée
+            nom_boite = ligne['ENTREPRISE']
+            nom_resp = ligne['NOM_RESP']
+            civilite = ligne['CIVILITÉ_RESP']
+
+            SI nom_resp existe :
+                salutation = "Bonjour " + civilite + " " + nom_resp
+            SINON :
+                salutation = "Madame, Monsieur"
+
+            // --- ETAPE 2 : CONSTRUCTION DU MAIL ---
+            
+            CREER un objet Message vide
+            DEFINIR l'expéditeur (From) = mon_email
+            DEFINIR le destinataire (To) = email_destinataire
+            DEFINIR le Sujet = "Candidature pour un stage - " + nom_boite
+
+            // Corps du texte (HTML)
+            corps_message = :
+                "<p>" + salutation + ",</p>"
+                "<p>Je vous écris car " + nom_boite + " m'intéresse beaucoup...</p>"
+                "<p>Cordialement,</p>"
+            
+            ATTACHER corps_message au Message
+
+            // --- ETAPE 3 : PIECE JOINTE (LE CV) ---
+            
+            OUVRIR fichier_cv en mode lecture binaire
+            ENCODER le fichier pour l'email
+            AJOUTER le fichier au Message
+			ENCODER le fichier pour le referentiel
+			AJOUTER le fichier pour le referentiel 
+
+            // --- ETAPE 4 : ENVOI ET SECURITE ---
+            
+            ESSAYER :
+                ENVOYER le message via le serveur
+                AFFICHER "Succès : Mail envoyé à " + email_destinataire
+            SINON (en cas d'erreur) :
+                AFFICHER "Erreur d'envoi pour " + email_destinataire
+
+            // TRES IMPORTANT : ANTI-SPAM
+            ATTENDRE 10 secondes (time.sleep)
+
+        FIN POUR
+
+    // D. FERMETURE
+    QUITTER le serveur SMTP
+    AFFICHER "Travail terminé."
+
+	FIN FONCTION
