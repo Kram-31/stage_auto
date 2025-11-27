@@ -1,92 +1,121 @@
-// --- 1. IMPORTATION DES MODULES ---
-IMPORTER module pour envoyer des mails (smtplib)
-IMPORTER module pour gérer le CSV (csv)
-IMPORTER module pour gérer le temps/pauses (time)
-IMPORTER modules pour construire le mail (MIMEMultipart, MIMEText, MIMEBase)
+// ==========================================
+// 1. CONFIGURATION ET CONSTANTES
+// ==========================================
+IMPORTER les modules nécessaires (smtplib, csv, time, email)
 
-// --- 2. CONFIGURATION (CONSTANTES) ---
-DEFINIR mon_email = "ton_email@gmail.com"
-DEFINIR mon_mot_de_passe = "ton_mot_de_passe_application"
-DEFINIR fichier_cv = "Mon_CV.pdf"
-DEFINIR fichier_csv = "Liste entreprise stage.xlsx - Feuille 1.csv"
-DEFINIR referentiel_BTS = "referentiel_bts.pdf"
+CONSTANTE MON_EMAIL = "ton_email@gmail.com"
+CONSTANTE MON_MDP = "ton_mot_de_passe_application"
+CONSTANTE FICHIER_CV = "Mon_CV.pdf"
+CONSTANTE FICHIER_CSV = "Liste entreprise stage.xlsx - Feuille 1.csv"
 
-// --- 3. FONCTION PRINCIPALE ---
-FONCTION main():
+// ==========================================
+// 2. FONCTION : LIRE LE FICHIER CSV
+// ==========================================
+FONCTION recuperer_donnees(chemin_fichier):
+    Créer une liste vide "liste_a_contacter"
 
-    // A. CONNEXION AU SERVEUR (On ouvre la ligne sécurisée)
-    ESSAYER de se connecter au serveur SMTP (ex: gmail port 587)
-    ACTIVER la sécurité (starttls)
-    SE CONNECTER avec mon_email et mon_mot_de_passe
-    
-    SI échec : ARRÊTER le programme et afficher l'erreur.
-
-    // B. LECTURE DU FICHIER DONNÉES
-    OUVRIR fichier_csv en mode lecture :
-        CRÉER un lecteur de CSV (DictReader) qui reconnait les colonnes
-
-        // C. BOUCLE : ON TRAITE CHAQUE LIGNE (CHAQUE ENTREPRISE)
+    OUVRIR le fichier CSV en lecture :
         POUR CHAQUE ligne DANS le fichier :
-
-            // --- ETAPE 1 : RECUPERATION INTELLIGENTE DES DONNEES ---
             
-            // On cherche l'email du responsable en priorité
-            SI ligne['MAIL_RESPONSABLE'] n'est pas vide :
-                email_destinataire = ligne['MAIL_RESPONSABLE']
-            SINON SI ligne['EMAIL_ENTREPRISE'] n'est pas vide :
-                email_destinataire = ligne['EMAIL_ENTREPRISE']
+            // --- Logique de choix de l'email ---
+            SI la colonne 'MAIL_RESPONSABLE' est remplie :
+                email_final = colonne 'MAIL_RESPONSABLE'
+            SINON SI la colonne 'EMAIL_ENTREPRISE' est remplie :
+                email_final = colonne 'EMAIL_ENTREPRISE'
             SINON :
-                AFFICHER "Pas d'email pour cette ligne, on passe."
-                CONTINUER vers la prochaine ligne (skip)
+                PASSER à la ligne suivante (Pas d'adresse, inutile de continuer)
 
-            // On prépare la politesse personnalisée
-            nom_boite = ligne['ENTREPRISE']
-            nom_resp = ligne['NOM_RESP']
-            civilite = ligne['CIVILITÉ_RESP']
+            // --- Stockage des infos ---
+            candidat = {
+                'entreprise': colonne 'ENTREPRISE',
+                'email': email_final,
+                'civilite': colonne 'CIVILITÉ_RESP',
+                'nom_responsable': colonne 'NOM_RESP'
+            }
 
-            SI nom_resp existe :
-                salutation = "Bonjour " + civilite + " " + nom_resp
-            SINON :
-                salutation = "Madame, Monsieur"
+            AJOUTER candidat DANS "liste_a_contacter"
 
-            // --- ETAPE 2 : CONSTRUCTION DU MAIL ---
-            
-            CREER un objet Message vide
-            DEFINIR l'expéditeur (From) = mon_email
-            DEFINIR le destinataire (To) = email_destinataire
-            DEFINIR le Sujet = "Candidature pour un stage - " + nom_boite
+    RETOURNER "liste_a_contacter"
+FIN FONCTION
 
-            // Corps du texte (HTML)
-            corps_message = :
-                "<p>" + salutation + ",</p>"
-                "<p>Je vous écris car " + nom_boite + " m'intéresse beaucoup...</p>"
-                "<p>Cordialement,</p>"
-            
-            ATTACHER corps_message au Message
+// ==========================================
+// 3. FONCTION : FABRIQUER LE MAIL (TEXTE + PDF)
+// ==========================================
+FONCTION preparer_message(infos_candidat, chemin_cv):
+    
+    // --- Personnalisation de la formule de politesse ---
+    SI 'nom_responsable' existe ET 'civilite' existe :
+        salutation = "Bonjour " + civilite + " " + nom_responsable
+    SINON :
+        salutation = "Madame, Monsieur"
 
-            // --- ETAPE 3 : PIECE JOINTE (LE CV) ---
-            
-            OUVRIR fichier_cv en mode lecture binaire
-            ENCODER le fichier pour l'email
-            AJOUTER le fichier au Message
-			ENCODER le fichier pour le referentiel
-			AJOUTER le fichier pour le referentiel 
+    // --- Création de l'enveloppe ---
+    message = Nouvel Objet Email (MIMEMultipart)
+    message['From'] = MON_EMAIL
+    message['To'] = infos_candidat['email']
+    message['Subject'] = "Candidature Stage - " + infos_candidat['entreprise']
 
-            // --- ETAPE 4 : ENVOI ET SECURITE ---
-            
-            ESSAYER :
-                ENVOYER le message via le serveur
-                AFFICHER "Succès : Mail envoyé à " + email_destinataire
-            SINON (en cas d'erreur) :
-                AFFICHER "Erreur d'envoi pour " + email_destinataire
+    // --- Rédaction du Corps (HTML) ---
+    corps_html = :
+        "<p>" + salutation + ",</p>"
+        "<p>Je vous écris pour postuler chez " + infos_candidat['entreprise'] + "...</p>"
+        "<p>Cordialement...</p>"
+    
+    ATTACHER corps_html AU message
 
-            // TRES IMPORTANT : ANTI-SPAM
-            ATTENDRE 10 secondes (time.sleep)
+    // --- Ajout de la Pièce Jointe (CV) ---
+    OUVRIR fichier_cv EN MODE BINAIRE :
+        LIRE le fichier
+        ENCODER le fichier en base64
+        AJOUTER l'en-tête "Content-Disposition" (pour dire que c'est une pièce jointe)
+        ATTACHER le fichier AU message
 
-        FIN POUR
+    RETOURNER message
+FIN FONCTION
 
-    // D. FERMETURE
-    QUITTER le serveur SMTP
-    AFFICHER "Travail terminé."
+// ==========================================
+// 4. FONCTION PRINCIPALE (CHEF D'ORCHESTRE)
+// ==========================================
+FONCTION main():
+    
+    // 1. Récupération
+    AFFICHER "Lecture des données..."
+    liste_candidats = APPELER recuperer_donnees(FICHIER_CSV)
 
-	FIN FONCTION
+    // 2. Connexion Serveur
+    ESSAYER :
+        server = CONNEXION SMTP (smtp.gmail.com, 587)
+        server.STARTTLS() (Sécuriser la ligne)
+        server.LOGIN(MON_EMAIL, MON_MDP)
+        AFFICHER "Connecté au serveur mail."
+    EXCEPTION :
+        AFFICHER "Erreur de connexion internet ou mot de passe."
+        ARRÊTER TOUT
+
+    // 3. Boucle d'envoi
+    POUR CHAQUE candidat DANS liste_candidats :
+        
+        // Préparer
+        email_pret = APPELER preparer_message(candidat, FICHIER_CV)
+
+        // Envoyer
+        ESSAYER :
+            server.ENVOYER(email_pret)
+            AFFICHER " Envoyé à : " + candidat['entreprise']
+        EXCEPTION :
+            AFFICHER " Erreur d'envoi pour : " + candidat['entreprise']
+
+        // PAUSE OBLIGATOIRE (Anti-Spam)
+        AFFICHER "Pause de 10 secondes..."
+        ATTENDRE 10 secondes
+
+    // 4. Fin
+    server.QUIT()
+    AFFICHER "Tout est terminé."
+
+FIN FONCTION
+
+// ==========================================
+// 5. LANCEMENT
+// ==========================================
+LANCER main()
