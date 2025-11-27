@@ -13,7 +13,7 @@ smtp_server = "smtp.gmail.com"
 smtp_port = 587
 fichier_cv = "Mon_cv.pdf"
 fichiere_referentiel = "Referentiel_bts.pdf"
-fichier_csv = "Liste entreprise stage.xlsx - Feuille 1.csv" 
+ 
 
 #// ==========================================
 #// 2. FONCTION : LIRE LE FICHIER CSV
@@ -33,18 +33,14 @@ def lire_excel(chemin_fichier):
 
                 if not email_choisi:
                     email_choisi = row.get('MAL_ENTREPRISE')
-                if not email_chosi:
+                if not email_choisi:
                     continue
 
-                recruteur = {
-                        'entreprise': row.get('ENTREPRISE'),
-                        'email' : email_choisi,
-                        'civilite': row.get('CIVILITE_RESP'),
-                        'nom_responsable': row.get('NOM_RESP')
-                }
+                recruteur = row.to_dict()
+
                 liste_recruteurs.append(recruteur)
             return liste_recruteurs
-
+        
     except FileNotFoundError:
         print("Erreur pas de fichier xlsx.")
         return[]
@@ -54,7 +50,7 @@ def lire_excel(chemin_fichier):
 #// ==========================================
 
 if __name__ == "__main__":
-    recruteurs = lire_excel("/mnt/c/Users/kram/Documents/KRAM/Dev/stage_auto/Liste entreprise stage.xlsx")
+    recruteurs = lire_excel("/home/kram/Documents/dev/stage_auto/3.5_ListeEntrepriseStage_2024.xlsx")
     print(f"nombre de recruteurs : {len(recruteurs)}")
-    print(recruteurs[0])
+    print(recruteurs)
 
