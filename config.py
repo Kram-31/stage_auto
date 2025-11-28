@@ -27,7 +27,6 @@ FORMAT_DATE = '%d/%m/%Y'
 
 # Variable de test: date du jour pour tests rapides
 from datetime import datetime as _datetime
-TEST_DATE = '01/01/2027'
 
 # ==========================================
 # COLONNES EXCEL - Noms réels des colonnes dans le fichier
@@ -49,10 +48,5 @@ COLONNES = [
     'DATE_ENVOI'
 ]
 
-# ==========================================
-# LOGGING
-# ==========================================
-LOG_LEVEL = 'INFO'
-LOG_FILE = 'stage_auto.log'
 
 print('[CONFIG] Configuration chargée depuis .env')

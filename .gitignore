@@ -1,33 +1,30 @@
-﻿# Fichier de configuration sensible
-.env
-.env.local
-config.local.py
+﻿# --- Environnements Virtuels ---
+# Il ne faut jamais envoyer tout le dossier de l'environnement sur Git
+mon_env/
+venv/
+env/
 
-# Logs
-*.log
-stage_auto.log
-
-# Fichiers systèmes
+# --- Python ---
+# Fichiers compilés par Python (inutiles sur Git)
 __pycache__/
 *.pyc
-*.pyo
-*.egg-info/
-.pytest_cache/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# --- Configuration & Sécurité ---
+# TRÈS IMPORTANT : Contient tes variables d'environnement (mots de passe, clés)
+.env
 
-# OS
-.DS_Store
-Thumbs.db
+# Si 'config.py' contient des mots de passe en dur, décommente la ligne suivante :
+# config.py
 
-# Données sensibles
+# --- Fichiers de données (Excel/CSV) ---
+# On évite généralement de versionner les données brutes ou de sortie
 *.xlsx
+*.xls
 *.csv
-*.pdf
 
-# Autre
-.git/
+# Si tu veux quand même garder un fichier Excel spécifique (ex: un modèle vide),
+# tu peux ajouter une exception avec un point d'exclamation :
+# !mon_template.xlsx
+
+# --- Fichiers générés ou personnels ---
+Mon_cv.html
