@@ -53,3 +53,17 @@ Il met ensuite à jour le fichier Excel avec le statut de l'envoi et la date, po
 
 ```bash
 python main.py
+
+Le script affichera la progression dans le terminal :
+
+Plaintext
+
+Lecture des données
+5 recruteurs trouvés
+Connecté au serveur mail
+======================================================================
+PHASE : ENVOI DES MAILS
+======================================================================
+Mail envoyé à : Entreprise X (email@test.com)
+  → DATE_ENVOI: 27/11/2025
+...
