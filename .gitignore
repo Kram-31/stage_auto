@@ -1,8 +1,8 @@
 ﻿# --- Environnements Virtuels ---
 # Il ne faut jamais envoyer tout le dossier de l'environnement sur Git
-mon_env/
-venv/
-env/
+mon_env
+venv
+env
 
 # --- Python ---
 # Fichiers compilés par Python (inutiles sur Git)
@@ -20,11 +20,11 @@ __pycache__/
 # On évite généralement de versionner les données brutes ou de sortie
 *.xlsx
 *.xls
-*.csv
+
 
 # Si tu veux quand même garder un fichier Excel spécifique (ex: un modèle vide),
 # tu peux ajouter une exception avec un point d'exclamation :
 # !mon_template.xlsx
 
 # --- Fichiers générés ou personnels ---
-Mon_cv.pdf
+*.pdf
