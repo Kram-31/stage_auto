@@ -1,0 +1,33 @@
+﻿# Fichier de configuration sensible
+.env
+.env.local
+config.local.py
+
+# Logs
+*.log
+stage_auto.log
+
+# Fichiers systèmes
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Données sensibles
+*.xlsx
+*.csv
+*.pdf
+
+# Autre
+.git/

@@ -1,0 +1,36 @@
+1. Importer les modules nécessaires (os, smtplib, time, pandas, email, etc.)
+2. Charger la configuration depuis le fichier config.py
+
+3. Définir une fonction pour lire le fichier Excel :
+    - Tenter d'ouvrir le fichier et de le charger dans un DataFrame
+    - Gérer les erreurs de lecture
+
+4. Définir une fonction pour mettre à jour le statut et la date d'envoi dans le fichier Excel :
+    - Modifier les colonnes 'STATUT' et 'DATE_ENVOI' pour la ligne concernée
+    - Sauvegarder le DataFrame dans le fichier Excel
+
+5. Définir une fonction pour attacher un fichier (CV) au mail :
+    - Déterminer le type MIME du fichier
+    - Lire le fichier et l'attacher au message
+
+6. Définir une fonction pour fabriquer le mail :
+    - Construire la salutation selon les informations du recruteur
+    - Créer le message email avec le corps HTML
+    - Attacher le CV au message
+
+7. Fonction principale :
+    - Lire les données du fichier Excel
+    - Si aucune donnée, arrêter le programme
+    - Se connecter au serveur SMTP
+    - Pour chaque recruteur dans le fichier Excel :
+        - Vérifier si le mail a déjà été envoyé (statut)
+        - Vérifier la présence d'une adresse email
+        - Fabriquer le mail
+        - (Simulation) Envoyer le mail
+        - Mettre à jour le statut et la date d'envoi dans le fichier Excel
+        - Attendre un délai entre chaque envoi
+    - Afficher le résumé du nombre de mails envoyés
+    - Se déconnecter du serveur SMTP
+    - Afficher la fin de l'exécution
+
+8. Exécuter la fonction principale si le script est lancé directement
