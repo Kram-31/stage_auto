@@ -1,47 +1,43 @@
-# stage_auto
+# 🚀 Stage Auto - Automatisation de Candidatures
 
-Ce script automatise l'envoi de candidatures par email à partir d'un fichier Excel contenant la liste des recruteurs.
+Ce projet est un outil d'automatisation développé en Python pour faciliter la recherche de stage. Il permet d'envoyer des emails de candidature personnalisés en masse à partir d'une liste de recruteurs stockée dans un fichier Excel, tout en attachant automatiquement un CV au format PDF.
 
-## Fonctionnalités
+## 📋 Fonctionnalités
 
-- Lecture d'un fichier Excel avec les informations des recruteurs.
-- Génération automatique d'emails personnalisés.
-- Ajout du CV en pièce jointe.
-- Mise à jour du fichier Excel après chaque envoi (statut et date).
-- Simulation d'envoi (DRY RUN) pour les tests.
+* **Personnalisation :** Adapte la salutation (M./Mme) et le nom de l'entreprise dans le corps du mail.
+* **Suivi automatique :** Met à jour le fichier Excel après chaque envoi avec le statut "Mail Envoyé" et la date du jour.
+* **Pièces jointes :** Attache automatiquement le CV (PDF) situé dans le dossier `assets`.
+* **Anti-Spam :** Intègre un délai configurable entre chaque envoi pour éviter d'être bloqué par le serveur SMTP.
+* **Sécurité :** Utilise des variables d'environnement (.env) pour ne jamais exposer les mots de passe dans le code.
 
-## Prérequis
+## 📂 Structure du Projet
 
-- Python 3.x
-- Modules : `pandas`, `openpyxl`, `smtplib`
+Voici comment organiser vos fichiers pour que le script fonctionne :
 
-## Installation
+```text
+stage_auto/
+├── assets/              # Placez ici votre CV (ex: Mon_cv.pdf)
+├── data/                # Placez ici votre fichier Excel (ex: Liste_stage.xlsx)
+├── docs/                # Documentation et pseudo-code
+├── .env                 # Fichier de configuration secret (non versionné)
+├── config.py            # Script de configuration des chemins et variables
+├── main.py              # Script principal à lancer
+├── requirements.txt     # Liste des modules Python nécessaires
+└── README.md            # Ce fichier
 
-1. Cloner le dépôt ou copier les fichiers dans un dossier.
-2. Installer les dépendances :
-   ```
-   pip install pandas openpyxl
-   ```
-3. Configurer le fichier `config.py` avec vos paramètres SMTP et chemins de fichiers.
+⚙️ Installation
+1. Préparer l'environnement
+Ouvrez un terminal et lancez les commandes suivantes :
 
-## Utilisation
+''''Bash
 
-1. Préparer le fichier Excel avec les colonnes nécessaires (`ENTREPRISE`, `MAIL_RESPONSABLE`, etc.).
-2. Placer votre CV au chemin indiqué dans `config.py`.
-3. Lancer le script :
-   ```
-   python main.py
-   ```
+# Créer un environnement virtuel pour isoler le projet
+python -m venv venv
 
-## Personnalisation
+# Activer l'environnement (Sur Windows)
+venv\Scripts\activate
+# OU (Sur Mac/Linux)
+# source venv/bin/activate
 
-- Modifiez le corps du mail dans la fonction `fabriquer_mail` selon vos besoins.
-- Adaptez le délai entre les envois dans `config.py`.
-
-## Sécurité
-
-Ne partagez pas vos identifiants SMTP. Utilisez des variables d'environnement pour plus de sécurité.
-
-## Auteur
-
-Kamal Kaced
+# Installer les dépendances listées dans requirements.txt
+pip install -r requirements.txt
