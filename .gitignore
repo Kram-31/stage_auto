@@ -29,6 +29,4 @@ __pycache__/
 # --- Fichiers générés ou personnels ---
 *.pdf
 *.html
-*.log
-.DS_Store
-.idea/  
+*.log 
